@@ -1,0 +1,27 @@
+[submodule "vendor/github.com/go-openapi/errors"]
+	path = vendor/github.com/go-openapi/errors
+	url = https://github.com/go-openapi/errors
+[submodule "vendor/github.com/go-openapi/loads"]
+	path = vendor/github.com/go-openapi/loads
+	url = https://github.com/go-openapi/loads
+[submodule "vendor/github.com/go-openapi/runtime"]
+	path = vendor/github.com/go-openapi/runtime
+	url = https://github.com/go-openapi/runtime
+[submodule "vendor/github.com/go-openapi/spec"]
+	path = vendor/github.com/go-openapi/spec
+	url = https://github.com/go-openapi/spec
+[submodule "vendor/github.com/go-openapi/strfmt"]
+	path = vendor/github.com/go-openapi/strfmt
+	url = https://github.com/go-openapi/strfmt
+[submodule "vendor/github.com/go-openapi/swag"]
+	path = vendor/github.com/go-openapi/swag
+	url = https://github.com/go-openapi/swag
+[submodule "vendor/github.com/go-openapi/validate"]
+	path = vendor/github.com/go-openapi/validate
+	url = https://github.com/go-openapi/validate
+[submodule "vendor/github.com/jessevdk/go-flags"]
+	path = vendor/github.com/jessevdk/go-flags
+	url = https://github.com/jessevdk/go-flags
+[submodule "vendor/github.com/tylerb/graceful"]
+	path = vendor/github.com/tylerb/graceful
+	url = https://github.com/tylerb/graceful
