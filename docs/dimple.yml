@@ -1,0 +1,71 @@
+swagger: '2.0'
+info:
+  title: dimple
+  description: |
+    dimple api
+  version: "0.1.0"
+produces:
+  - application/json
+consumes:
+  - application/json
+paths:
+  /send:
+    post:
+      summary: send some crypto
+      operationId: send
+      description: send some crypto
+      responses:
+        200:
+          description: return txid
+          schema:
+            type: string
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      parameters:
+        - name: to
+          in: query
+          type: string
+          required: true
+  /list:
+    get:
+      summary: list past sent crypto
+      operationId: list
+      description: return past sent crypto
+      responses:
+        200:
+          description: Crypto sent
+          schema:
+            $ref: '#/definitions/listing'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+  listing:
+    type: object
+    properties:
+      addr:
+        type: string
+        description: Some string
+      tx:
+        type: string
+        description: txid
+      amount:
+        type: integer
+        description: amount sent
+  Error:
+    type: object
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
