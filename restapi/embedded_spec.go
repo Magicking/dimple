@@ -109,7 +109,7 @@ func init() {
           "description": "amount sent",
           "type": "integer"
         },
-        "tx": {
+        "txid": {
           "description": "txid",
           "type": "string"
         }

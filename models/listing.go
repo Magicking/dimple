@@ -24,14 +24,14 @@ type Listing struct {
 	Amount int64 `json:"amount,omitempty"`
 
 	// txid
-	Tx string `json:"tx,omitempty"`
+	Txid string `json:"txid,omitempty"`
 }
 
 /* polymorph listing addr false */
 
 /* polymorph listing amount false */
 
-/* polymorph listing tx false */
+/* polymorph listing txid false */
 
 // Validate validates this listing
 func (m *Listing) Validate(formats strfmt.Registry) error {

@@ -50,7 +50,7 @@ definitions:
       addr:
         type: string
         description: Some string
-      tx:
+      txid:
         type: string
         description: txid
       amount:
