@@ -3,14 +3,17 @@
 package restapi
 
 import (
+	"context"
 	"crypto/tls"
 	"net/http"
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
+	swag "github.com/go-openapi/swag"
 	graceful "github.com/tylerb/graceful"
 
+	"github.com/Magicking/dimple/internal"
 	"github.com/Magicking/dimple/restapi/operations"
 )
 
@@ -18,8 +21,28 @@ import (
 
 //go:generate swagger generate server --target .. --name  --spec ../docs/dimple.yml
 
+var ethopts struct {
+	WsURI      string `long:"ws-uri" env:"WS_URI" description:"Ethereum WS URI (e.g: ws://HOST:8546)"`
+	Retry      int    `long:"retry" env:"RETRY" default:"3" description:"Max connection retry"`
+	PrivateKey string `long:"pkey" env:"PRIVATE_KEY" description:"hex encoded private key"`
+}
+
+var serviceopts struct {
+	DbDSN string `long:"db-dsn" env:"DB_DSN" description:"Database DSN (e.g: /tmp/test.sqlite)"`
+}
+
 func configureFlags(api *operations.DimpleAPI) {
-	// api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ ... }
+	ethOpts := swag.CommandLineOptionsGroup{
+		LongDescription:  "",
+		ShortDescription: "Ethereum options",
+		Options:          &ethopts,
+	}
+	serviceOpts := swag.CommandLineOptionsGroup{
+		LongDescription:  "",
+		ShortDescription: "Service options",
+		Options:          &serviceopts,
+	}
+	api.CommandLineOptionsGroups = []swag.CommandLineOptionsGroup{ethOpts, serviceOpts}
 }
 
 func configureAPI(api *operations.DimpleAPI) http.Handler {
