@@ -25,7 +25,7 @@ type ListOK struct {
 	/*
 	  In: Body
 	*/
-	Payload *models.Listing `json:"body,omitempty"`
+	Payload []*models.ListItem `json:"body,omitempty"`
 }
 
 // NewListOK creates ListOK with default headers values
@@ -34,13 +34,13 @@ func NewListOK() *ListOK {
 }
 
 // WithPayload adds the payload to the list o k response
-func (o *ListOK) WithPayload(payload *models.Listing) *ListOK {
+func (o *ListOK) WithPayload(payload []*models.ListItem) *ListOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the list o k response
-func (o *ListOK) SetPayload(payload *models.Listing) {
+func (o *ListOK) SetPayload(payload []*models.ListItem) {
 	o.Payload = payload
 }
 
@@ -48,12 +48,15 @@ func (o *ListOK) SetPayload(payload *models.Listing) {
 func (o *ListOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
-	if o.Payload != nil {
-		payload := o.Payload
-		if err := producer.Produce(rw, payload); err != nil {
-			panic(err) // let the recovery middleware deal with this
-		}
+	payload := o.Payload
+	if payload == nil {
+		payload = make([]*models.ListItem, 0, 50)
 	}
+
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+
 }
 
 /*ListDefault Unexpected error

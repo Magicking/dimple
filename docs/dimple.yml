@@ -37,14 +37,16 @@ paths:
         200:
           description: Crypto sent
           schema:
-            $ref: '#/definitions/listing'
+            type: array
+            items:
+              $ref: '#/definitions/list_item'
         default:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
 
 definitions:
-  listing:
+  list_item:
     type: object
     properties:
       addr:

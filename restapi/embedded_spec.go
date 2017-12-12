@@ -36,7 +36,10 @@ func init() {
           "200": {
             "description": "Crypto sent",
             "schema": {
-              "$ref": "#/definitions/listing"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/list_item"
+              }
             }
           },
           "default": {
@@ -98,7 +101,7 @@ func init() {
         }
       }
     },
-    "listing": {
+    "list_item": {
       "type": "object",
       "properties": {
         "addr": {

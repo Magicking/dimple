@@ -12,10 +12,10 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// Listing listing
-// swagger:model listing
+// ListItem list item
+// swagger:model list_item
 
-type Listing struct {
+type ListItem struct {
 
 	// Some string
 	Addr string `json:"addr,omitempty"`
@@ -27,14 +27,14 @@ type Listing struct {
 	Txid string `json:"txid,omitempty"`
 }
 
-/* polymorph listing addr false */
+/* polymorph list_item addr false */
 
-/* polymorph listing amount false */
+/* polymorph list_item amount false */
 
-/* polymorph listing txid false */
+/* polymorph list_item txid false */
 
-// Validate validates this listing
-func (m *Listing) Validate(formats strfmt.Registry) error {
+// Validate validates this list item
+func (m *ListItem) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if len(res) > 0 {
@@ -44,7 +44,7 @@ func (m *Listing) Validate(formats strfmt.Registry) error {
 }
 
 // MarshalBinary interface implementation
-func (m *Listing) MarshalBinary() ([]byte, error) {
+func (m *ListItem) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -52,8 +52,8 @@ func (m *Listing) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *Listing) UnmarshalBinary(b []byte) error {
-	var res Listing
+func (m *ListItem) UnmarshalBinary(b []byte) error {
+	var res ListItem
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}
