@@ -55,6 +55,11 @@ func configureAPI(api *operations.DimpleAPI) http.Handler {
 	// Example:
 	// api.Logger = log.Printf
 
+	ctx := internal.InitContext(context.Background())
+	internal.NewDBToContext(ctx, serviceopts.DbDSN)
+	internal.NewCCToContext(ctx, ethopts.WsURI, ethopts.Retry)
+	internal.Init(ctx, ethopts.PrivateKey)
+
 	api.JSONConsumer = runtime.JSONConsumer()
 
 	api.JSONProducer = runtime.JSONProducer()
