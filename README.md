@@ -13,10 +13,18 @@ services:
       - DB_DSN=host=postgres user=eb7f87edf260973 dbname=dimple sslmode=disable password=078f2f145dac4222
       - PRIVATE_KEY=f485e851f93defcd877e6212a4c51351fc49a335a7cd155f713a5647c6496a56
       - CHAIN_ID=4 #
-    ports:
-      - "0.0.0.0:8000:8090"
     links:
       - postgres
+
+  caddy-rev:
+    image: abiosoft/caddy
+    ports:
+      - "0.0.0.0:80:80"
+    volumes:
+      - "./Caddyfile:/etc/Caddyfile:ro"
+      - "./front:/var/www:ro"
+    depends_on:
+      - dimple
 
   postgres:
     image: postgres:9.5
