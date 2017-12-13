@@ -4,20 +4,17 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math/big"
 	"time"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-
-	"github.com/ethereum/go-ethereum/common"
 )
 
 type Wrinkle struct {
 	gorm.Model
-	To     common.Address
-	TxHash common.Hash
-	Amount big.Int
+	To     string
+	Txid   string
+	Amount string
 }
 
 func InsertWrinkle(ctx context.Context, wkl *Wrinkle) error {
