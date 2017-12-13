@@ -2,12 +2,11 @@
 const angular = require('angular')
 const units = require('ethereumjs-units')
 
-const endpoint = '/api'
+const endpoint = 'api'
+
 const sitekey = 'YOUR SITE KEY'
 
 window.addEventListener('load', function() {
-  // Renders the HTML element with id 'example1' as a reCAPTCHA widget.
-  // The id of the reCAPTCHA widget is assigned to 'widgetId1'.
   grecaptcha.render('captcha', {
     'sitekey' : sitekey,
     'theme' : 'dark'
