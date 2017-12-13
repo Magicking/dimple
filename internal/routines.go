@@ -17,8 +17,9 @@ var _key *ecdsa.PrivateKey
 var _from common.Address
 var _balance *big.Int
 var _lastNonce uint64
+var _chainId *big.Int
 
-func Init(ctx context.Context, privateKey string) {
+func Init(ctx context.Context, privateKey string, chainId string) {
 	key, err := crypto.HexToECDSA(privateKey)
 	if err != nil {
 		log.Fatalf("Init: %v", err)
@@ -26,6 +27,8 @@ func Init(ctx context.Context, privateKey string) {
 	_key = key
 	_from = crypto.PubkeyToAddress(_key.PublicKey)
 	_balance = new(big.Int)
+	_chainId = new(big.Int)
+	_chainId.SetString(chainId, 10)
 
 	c := SchedulerChanFromContext(ctx)
 	c <- callback(func(context.Context) error {
@@ -71,7 +74,7 @@ func SendWithValue(ctx context.Context, to common.Address, value *big.Int) (comm
 	}
 	gasLimit := big.NewInt(21000)
 	rawTx := types.NewTransaction(_lastNonce, to, value, gasLimit, gasPrice, nil)
-	signedTx, err := auth.Signer(types.HomesteadSigner{}, _from, rawTx)
+	signedTx, err := auth.Signer(types.NewEIP155Signer(_chainId), _from, rawTx)
 	if err != nil {
 		return common.Hash{}, fmt.Errorf("SendWithValue: %v", err)
 	}
