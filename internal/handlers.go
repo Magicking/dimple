@@ -34,7 +34,7 @@ func ListHandler(ctx context.Context, params operations.ListParams) middleware.R
 	return operations.NewListOK().WithPayload(payload)
 }
 func SendHandler(ctx context.Context, params operations.SendParams) middleware.Responder {
-	to := common.StringToAddress(params.To)
+	to := common.HexToAddress(params.To)
 	amount := big.NewInt(eth.Ether)
 	if _balance.Cmp(amount) < 0 {
 		err_str := fmt.Sprintf("Insuficient funds: %v", _balance)
