@@ -7,8 +7,8 @@
   <title>Dimple fossete</title>
 </head>
 <body ng-controller="dimpleCtl">
-<div class="content" id="content-node">
-  <div class="fuzz"></div>
+  <div class="content" id="content-node">
+    <div class="fuzz"></div>
     <div class="instructions-wrapper">
       <div class="instructions">
         <table class="table">
@@ -23,32 +23,27 @@
             <td><span class="white">{{ row.amount }}</span></td>
           </tr>
         </table>
-       <p>
-         <form action="" novalidate>
-           <div class="row">
-             <div class="col-lg-6">
-               <input id="addr" type="text" class="form-control" placeholder="0x48d24715FE9F7daa90286141f9b17e184B5A148B">
-             </div>
-             <div class="col-lg-3">
-               <button id="send" type="button" class="btn btn-primary green">Send |Ξther</button>
-             </div>
-           </div>
-           <div class="row">
-             <div class="col-lg-6">
-               <div id="captcha"></div>
-             </div>
-           </div>
-         </form>
-       </p>
+        <p>
+          <form action="" novalidate>
+            <div class="row">
+              <div class="col-lg-6">
+                <input id="addr" type="text" class="form-control" placeholder="0x48d24715FE9F7daa90286141f9b17e184B5A148B">
+              </div>
+              <div class="col-lg-3">
+                <button id="send" type="button" class="btn btn-primary green">Send |Ξther</button>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div id="captcha"></div>
+              </div>
+            </div>
+          </form>
+        </p>
       </div>
     </div>
   </div>
-<script>
-  var p = document.getElementById("content-node");
-  var p_prime = p.cloneNode(true);
-  document.body.appendChild(p_prime);
-</script>
-<script src="js/bundle.js"></script>
-<script src='//www.google.com/recaptcha/api.js'></script>
+  <script src="js/bundle.js"></script>
+  <script src='//www.google.com/recaptcha/api.js'></script>
 </body>
 </html>

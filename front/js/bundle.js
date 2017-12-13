@@ -4,13 +4,16 @@ const units = require('ethereumjs-units')
 
 const endpoint = 'api'
 
-const sitekey = 'YOUR SITE KEY'
+const sitekey = '6LcezDwUAAAAAKFzR3svWPlSc7n94lSpdu3z3m-t'
 
 window.addEventListener('load', function() {
   grecaptcha.render('captcha', {
     'sitekey' : sitekey,
     'theme' : 'dark'
   });
+  var p = document.getElementById("content-node");
+  var p_prime = p.cloneNode(true);
+  document.body.appendChild(p_prime);
 });
 
 ttt = angular.module('dimpleApp', [])
