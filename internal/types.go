@@ -5,6 +5,7 @@ import (
 	blktk "github.com/Magicking/gethitihteg"
 	"github.com/jinzhu/gorm"
 	"log"
+	"time"
 )
 
 type key int
@@ -12,6 +13,7 @@ type key int
 var ctxValKey key = 0
 var dbKey key = 1
 var ethRpcKey key = 2
+var schedulerKey key = 3
 
 type ctxValues struct {
 	m map[key]interface{}
@@ -86,6 +88,20 @@ func NewCCToContext(ctx context.Context, wsURI string, retry int) {
 func CCFromContext(ctx context.Context) *blktk.NodeConnector {
 	key := ethRpcKey
 	ret, ok := getContextValue(ctx, key).(*blktk.NodeConnector)
+	if !ok {
+		log.Fatalf("Could not cast context with key %d", key)
+	}
+	return ret
+}
+
+func NewSchedulerToContext(ctx context.Context, tick time.Duration) {
+	c := NewScheduler(ctx, tick)
+	setContextValue(ctx, schedulerKey, c)
+}
+
+func SchedulerChanFromContext(ctx context.Context) chan callback {
+	key := schedulerKey
+	ret, ok := getContextValue(ctx, key).(chan callback)
 	if !ok {
 		log.Fatalf("Could not cast context with key %d", key)
 	}
