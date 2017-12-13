@@ -14,6 +14,9 @@ import (
 )
 
 var _key *ecdsa.PrivateKey
+var _from common.Address
+var _balance *big.Int
+var _lastNonce uint64
 
 func Init(ctx context.Context, privateKey string) {
 	key, err := crypto.HexToECDSA(privateKey)
@@ -21,36 +24,61 @@ func Init(ctx context.Context, privateKey string) {
 		log.Fatalf("Init: %v", err)
 	}
 	_key = key
+	_from = crypto.PubkeyToAddress(_key.PublicKey)
+	_balance = new(big.Int)
+
+	c := SchedulerChanFromContext(ctx)
+	c <- callback(func(context.Context) error {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Println("Context error", r)
+			}
+		}()
+		nc := CCFromContext(ctx)
+		balance, err := nc.GetBalanceAt(ctx, _from, nil)
+		if err != nil {
+			return err
+		}
+		_balance.Set(balance)
+		return nil
+	})
+	c <- callback(func(context.Context) error {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Println("Context error", r)
+			}
+		}()
+		nc := CCFromContext(ctx)
+		nonce, err := nc.PendingNonceAt(ctx, _from)
+		if err != nil {
+			return fmt.Errorf("failed to retrieve account nonce: %v", err)
+		}
+		_lastNonce = nonce
+		return nil
+	})
 }
 
 func SendWithValue(ctx context.Context, to common.Address, value *big.Int) (common.Hash, error) {
 	nc := CCFromContext(ctx)
 	auth := bind.NewKeyedTransactor(_key)
-	from := crypto.PubkeyToAddress(_key.PublicKey)
 
 	if value == nil {
 		value = new(big.Int)
-	}
-	var nonce uint64
-	nonce, err := nc.PendingNonceAt(ctx, from)
-	if err != nil {
-		return common.Hash{}, fmt.Errorf("failed to retrieve account nonce: %v", err)
-	} else {
-		nonce = 0
 	}
 	gasPrice, err := nc.SuggestGasPrice(ctx)
 	if err != nil {
 		return common.Hash{}, fmt.Errorf("failed to suggest gas price: %v", err)
 	}
 	gasLimit := big.NewInt(21000)
-	rawTx := types.NewTransaction(nonce, to, value, gasLimit, gasPrice, nil)
-	signedTx, err := auth.Signer(types.HomesteadSigner{}, from, rawTx)
+	rawTx := types.NewTransaction(_lastNonce, to, value, gasLimit, gasPrice, nil)
+	signedTx, err := auth.Signer(types.HomesteadSigner{}, _from, rawTx)
 	if err != nil {
-		log.Fatalf("SendWithValue: %v", err)
+		return common.Hash{}, fmt.Errorf("SendWithValue: %v", err)
 	}
 	err = nc.SendTransaction(ctx, signedTx)
 	if err != nil {
 		return common.Hash{}, fmt.Errorf("SendTransaction: %v", err)
 	}
+	_lastNonce++
 	return signedTx.Hash(), nil
 }
