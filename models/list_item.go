@@ -21,7 +21,7 @@ type ListItem struct {
 	Addr string `json:"addr,omitempty"`
 
 	// amount sent
-	Amount int64 `json:"amount,omitempty"`
+	Amount string `json:"amount,omitempty"`
 
 	// txid
 	Txid string `json:"txid,omitempty"`

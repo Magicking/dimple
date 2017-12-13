@@ -52,7 +52,7 @@ func init() {
       }
     },
     "/send": {
-      "post": {
+      "get": {
         "description": "send some crypto",
         "summary": "send some crypto",
         "operationId": "send",
@@ -110,7 +110,7 @@ func init() {
         },
         "amount": {
           "description": "amount sent",
-          "type": "integer"
+          "type": "string"
         },
         "txid": {
           "description": "txid",

@@ -29,7 +29,7 @@ func NewSend(ctx *middleware.Context, handler SendHandler) *Send {
 	return &Send{Context: ctx, Handler: handler}
 }
 
-/*Send swagger:route POST /send send
+/*Send swagger:route GET /send send
 
 send some crypto
 

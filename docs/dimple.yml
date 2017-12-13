@@ -10,7 +10,7 @@ consumes:
   - application/json
 paths:
   /send:
-    post:
+    get:
       summary: send some crypto
       operationId: send
       description: send some crypto
@@ -56,7 +56,7 @@ definitions:
         type: string
         description: txid
       amount:
-        type: integer
+        type: string
         description: amount sent
   Error:
     type: object

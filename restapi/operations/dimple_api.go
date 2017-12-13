@@ -241,10 +241,10 @@ func (o *DimpleAPI) initHandlerCache() {
 	}
 	o.handlers["GET"]["/list"] = NewList(o.context, o.ListHandler)
 
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/send"] = NewSend(o.context, o.SendHandler)
+	o.handlers["GET"]["/send"] = NewSend(o.context, o.SendHandler)
 
 }
 
