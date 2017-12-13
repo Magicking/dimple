@@ -26,6 +26,7 @@ func Init(ctx context.Context, privateKey string, chainId string) {
 	}
 	_key = key
 	_from = crypto.PubkeyToAddress(_key.PublicKey)
+	log.Println("Using account", _from.Hex())
 	_balance = new(big.Int)
 	_chainId = new(big.Int)
 	_chainId.SetString(chainId, 10)
