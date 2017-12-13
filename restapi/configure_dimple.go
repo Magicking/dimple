@@ -6,6 +6,7 @@ import (
 	"context"
 	"crypto/tls"
 	"net/http"
+	"time"
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
@@ -58,6 +59,7 @@ func configureAPI(api *operations.DimpleAPI) http.Handler {
 	ctx := internal.InitContext(context.Background())
 	internal.NewDBToContext(ctx, serviceopts.DbDSN)
 	internal.NewCCToContext(ctx, ethopts.WsURI, ethopts.Retry)
+	internal.NewSchedulerToContext(ctx, 1*time.Second)
 	internal.Init(ctx, ethopts.PrivateKey)
 
 	api.JSONConsumer = runtime.JSONConsumer()
@@ -65,10 +67,10 @@ func configureAPI(api *operations.DimpleAPI) http.Handler {
 	api.JSONProducer = runtime.JSONProducer()
 
 	api.ListHandler = operations.ListHandlerFunc(func(params operations.ListParams) middleware.Responder {
-		return middleware.NotImplemented("operation .List has not yet been implemented")
+		return internal.ListHandler(ctx, params)
 	})
 	api.SendHandler = operations.SendHandlerFunc(func(params operations.SendParams) middleware.Responder {
-		return middleware.NotImplemented("operation .Send has not yet been implemented")
+		return internal.SendHandler(ctx, params)
 	})
 
 	api.ServerShutdown = func() {}
