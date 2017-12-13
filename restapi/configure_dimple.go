@@ -26,7 +26,7 @@ var ethopts struct {
 	WsURI      string `long:"ws-uri" env:"WS_URI" description:"Ethereum WS URI (e.g: ws://HOST:8546)"`
 	Retry      int    `long:"retry" env:"RETRY" default:"3" description:"Max connection retry"`
 	PrivateKey string `long:"pkey" env:"PRIVATE_KEY" description:"hex encoded private key"`
-	NetworkId  string `long:"network-id" env:"NETWORK_ID" description:"Ethereum network id"`
+	ChainId    string `long:"chain-id" env:"CHAIN_ID" description:"Ethereum chain id"`
 }
 
 var serviceopts struct {
@@ -61,7 +61,7 @@ func configureAPI(api *operations.DimpleAPI) http.Handler {
 	internal.NewDBToContext(ctx, serviceopts.DbDSN)
 	internal.NewCCToContext(ctx, ethopts.WsURI, ethopts.Retry)
 	internal.NewSchedulerToContext(ctx, 1*time.Second)
-	internal.Init(ctx, ethopts.PrivateKey, ethopts.NetworkId)
+	internal.Init(ctx, ethopts.PrivateKey, ethopts.ChainId)
 
 	api.JSONConsumer = runtime.JSONConsumer()
 
