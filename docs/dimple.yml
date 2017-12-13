@@ -8,12 +8,21 @@ produces:
   - application/json
 consumes:
   - application/json
+securityDefinitions:
+  reCaptcha:
+    type: oauth2
+    authorizationUrl: http://6120.eu/dimple/
+    flow: implicit
+    scopes:
+      write:send: send
 paths:
   /send:
     get:
       summary: send some crypto
       operationId: send
       description: send some crypto
+      security:
+        - reCaptcha: []
       responses:
         200:
           description: return txid

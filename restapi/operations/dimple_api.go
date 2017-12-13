@@ -38,9 +38,16 @@ func NewDimpleAPI(spec *loads.Document) *DimpleAPI {
 		ListHandler: ListHandlerFunc(func(params ListParams) middleware.Responder {
 			return middleware.NotImplemented("operation List has not yet been implemented")
 		}),
-		SendHandler: SendHandlerFunc(func(params SendParams) middleware.Responder {
+		SendHandler: SendHandlerFunc(func(params SendParams, principal interface{}) middleware.Responder {
 			return middleware.NotImplemented("operation Send has not yet been implemented")
 		}),
+
+		ReCaptchaAuth: func(token string, scopes []string) (interface{}, error) {
+			return nil, errors.NotImplemented("oauth2 bearer auth (reCaptcha) has not yet been implemented")
+		},
+
+		// default authorizer is authorized meaning no requests are blocked
+		APIAuthorizer: security.Authorized(),
 	}
 }
 
@@ -70,6 +77,13 @@ type DimpleAPI struct {
 
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
+
+	// ReCaptchaAuth registers a function that takes an access token and a collection of required scopes and returns a principal
+	// it performs authentication based on an oauth2 bearer token provided in the request
+	ReCaptchaAuth func(string, []string) (interface{}, error)
+
+	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
+	APIAuthorizer runtime.Authorizer
 
 	// ListHandler sets the operation handler for the list operation
 	ListHandler ListHandler
@@ -138,6 +152,10 @@ func (o *DimpleAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
+	if o.ReCaptchaAuth == nil {
+		unregistered = append(unregistered, "ReCaptchaAuth")
+	}
+
 	if o.ListHandler == nil {
 		unregistered = append(unregistered, "ListHandler")
 	}
@@ -161,14 +179,24 @@ func (o *DimpleAPI) ServeErrorFor(operationID string) func(http.ResponseWriter, 
 // AuthenticatorsFor gets the authenticators for the specified security schemes
 func (o *DimpleAPI) AuthenticatorsFor(schemes map[string]spec.SecurityScheme) map[string]runtime.Authenticator {
 
-	return nil
+	result := make(map[string]runtime.Authenticator)
+	for name, scheme := range schemes {
+		switch name {
+
+		case "reCaptcha":
+
+			result[name] = o.BearerAuthenticator(scheme.Name, o.ReCaptchaAuth)
+
+		}
+	}
+	return result
 
 }
 
 // Authorizer returns the registered authorizer
 func (o *DimpleAPI) Authorizer() runtime.Authorizer {
 
-	return nil
+	return o.APIAuthorizer
 
 }
 

@@ -5,17 +5,21 @@ package restapi
 import (
 	"context"
 	"crypto/tls"
+	"log"
 	"net/http"
 	"time"
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
+	security "github.com/go-openapi/runtime/security"
 	swag "github.com/go-openapi/swag"
 	graceful "github.com/tylerb/graceful"
 
 	"github.com/Magicking/dimple/internal"
 	"github.com/Magicking/dimple/restapi/operations"
+
+	"github.com/dpapathanasiou/go-recaptcha"
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten
@@ -23,14 +27,15 @@ import (
 //go:generate swagger generate server --target .. --name  --spec ../docs/dimple.yml
 
 var ethopts struct {
-	WsURI      string `long:"ws-uri" env:"WS_URI" description:"Ethereum WS URI (e.g: ws://HOST:8546)"`
-	Retry      int    `long:"retry" env:"RETRY" default:"3" description:"Max connection retry"`
-	PrivateKey string `long:"pkey" env:"PRIVATE_KEY" description:"hex encoded private key"`
-	ChainId    string `long:"chain-id" env:"CHAIN_ID" description:"Ethereum chain id"`
+	WsURI      string `long:"ws-uri" required:"true" env:"WS_URI" description:"Ethereum WS URI (e.g: ws://HOST:8546)"`
+	Retry      int    `long:"retry" required:"true" env:"RETRY" default:"3" description:"Max connection retry"`
+	PrivateKey string `long:"pkey" required:"true" env:"PRIVATE_KEY" description:"hex encoded private key"`
+	ChainId    string `long:"chain-id" required:"true" env:"CHAIN_ID" description:"Ethereum chain id"`
 }
 
 var serviceopts struct {
-	DbDSN string `long:"db-dsn" env:"DB_DSN" description:"Database DSN (e.g: /tmp/test.sqlite)"`
+	DbDSN               string `long:"db-dsn" env:"DB_DSN" required:"true" description:"Database DSN (e.g: /tmp/test.sqlite)"`
+	ReCaptchaPrivateKey string `long:"recaptcha-private-key" env:"RECAPTCHA_PRIVATE_KEY" description:"reCaptcha private key"`
 }
 
 func configureFlags(api *operations.DimpleAPI) {
@@ -63,14 +68,43 @@ func configureAPI(api *operations.DimpleAPI) http.Handler {
 	internal.NewSchedulerToContext(ctx, 1*time.Second)
 	internal.Init(ctx, ethopts.PrivateKey, ethopts.ChainId)
 
+	if serviceopts.ReCaptchaPrivateKey != "" {
+		recaptcha.Init(serviceopts.ReCaptchaPrivateKey)
+	} else {
+		log.Println("reCaptacha not enabled, set reCaptacha private key unset")
+	}
+
 	api.JSONConsumer = runtime.JSONConsumer()
 
 	api.JSONProducer = runtime.JSONProducer()
 
+	// Set your custom authorizer if needed. Default one is security.Authorized()
+	// Expected interface runtime.Authorizer
+	//
+	// Example:
+	api.BearerAuthenticator = func(name string, authenticate security.ScopedTokenAuthentication) runtime.Authenticator {
+		if serviceopts.ReCaptchaPrivateKey == "" {
+			return runtime.AuthenticatorFunc(func(interface{}) (bool, interface{}, error) {
+				return false, nil, nil
+			})
+		}
+		return security.ScopedAuthenticator(func(r *security.ScopedAuthRequest) (bool, interface{}, error) {
+			token := r.Request.Header.Get("Authorization")
+			if token == "" {
+				log.Printf("Access attempt with incorrect captcha token: %s", token)
+				return false, nil, errors.New(401, "incorrect  captcha token")
+			}
+			forwardedFor := r.Request.Header.Get("X-Forwarded-For")
+			ok := recaptcha.Confirm(forwardedFor, token)
+			log.Printf("Access payload[%v] for %v: %s", ok, r.Request.Header, token)
+			return ok, token, nil
+		})
+	}
+
 	api.ListHandler = operations.ListHandlerFunc(func(params operations.ListParams) middleware.Responder {
 		return internal.ListHandler(ctx, params)
 	})
-	api.SendHandler = operations.SendHandlerFunc(func(params operations.SendParams) middleware.Responder {
+	api.SendHandler = operations.SendHandlerFunc(func(params operations.SendParams, _ interface{}) middleware.Responder {
 		return internal.SendHandler(ctx, params)
 	})
 

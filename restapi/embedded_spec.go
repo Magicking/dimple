@@ -56,6 +56,11 @@ func init() {
         "description": "send some crypto",
         "summary": "send some crypto",
         "operationId": "send",
+        "security": [
+          {
+            "reCaptcha": []
+          }
+        ],
         "parameters": [
           {
             "type": "string",
@@ -116,6 +121,16 @@ func init() {
           "description": "txid",
           "type": "string"
         }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "reCaptcha": {
+      "type": "oauth2",
+      "flow": "implicit",
+      "authorizationUrl": "http://6120.eu/dimple/",
+      "scopes": {
+        "write:send": "send"
       }
     }
   }

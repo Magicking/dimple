@@ -1,5 +1,6 @@
 0.0.0.0:80 {
   proxy /api http://dimple:8090 {
+    transparent
     without /api
   }
   root /var/www
