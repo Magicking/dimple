@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html ng-app="dimpleApp" lang=en>
+  <meta charset="UTF-8">
+  <link href="//fonts.googleapis.com/css?family=VT323" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <link href="css/irc.css" rel="stylesheet" type="text/css">
+  <title>Dimple fossete</title>
+</head>
+<body ng-controller="dimpleCtl">
+<div class="content" id="content-node">
+  <div class="fuzz"></div>
+    <div class="instructions-wrapper">
+      <div class="instructions">
+        <table class="table">
+          <tr>
+            <th><span class="white">TX Hash</span></th>
+            <th><span class="white">Address</span></th>
+            <th><span class="white">Amount</span></th>
+          </tr>
+          <tr ng-repeat="row in transactions">
+            <td><span class="white">{{ row.txid | limitTo:16:0 }}…</span></td>
+            <td><span class="white">{{ row.addr }}</span></td>
+            <td><span class="white">{{ row.amount }}</span></td>
+          </tr>
+        </table>
+       <p>
+         <form action="" novalidate>
+           <div class="row">
+             <div class="col-lg-6">
+               <input id="addr" type="text" class="form-control" placeholder="0x48d24715FE9F7daa90286141f9b17e184B5A148B">
+             </div>
+             <div class="col-lg-3">
+               <button id="send" type="button" class="btn btn-primary green">Send |Ξther</button>
+             </div>
+           </div>
+           <div class="row">
+             <div class="col-lg-6">
+               <div id="captcha"></div>
+             </div>
+           </div>
+         </form>
+       </p>
+      </div>
+    </div>
+  </div>
+<script>
+  var p = document.getElementById("content-node");
+  var p_prime = p.cloneNode(true);
+  document.body.appendChild(p_prime);
+</script>
+<script src="js/bundle.js"></script>
+<script src='//www.google.com/recaptcha/api.js'></script>
+</body>
+</html>
